@@ -20,34 +20,34 @@ set -eo pipefail
 version="8"
 package="jre sdk sfj"
 arches="i386 ppc64le s390 s390x x86_64"
-osver="ubuntu alpine"
+osver="ubuntu alpine centos"
 
 # sha256sum for the various versions, packages and arches
-declare -A jre_8_sums=(
-	[version]="1.8.0_sr3fp22"
-	[i386]="b3e0d6d3e12cd642d791a711fcd6e125127d7bf0733515d4707f03e4033f84de"
-	[ppc64le]="3e975dc5610358f5843b890867a2cd0be6d6f714be19865fb1a701d8739d770b"
-	[s390]="eb075cec66cdd94f5a606ade5eee48396d805ebf9417952eeeb2864c45d81181"
-	[s390x]="aed93cc1776c10f6ca721d93224ce5feb05f9efdf5eec539a5cdde0f858ee379"
-	[x86_64]="ec96d978612fd3981bae382a745669544280cdd7eaaa55fadfbd7a26aa447b25"
+declare -a jre_8_sums=(
+	[version]="1.8.0_sr3fp21"
+	[i386]="aabff01e9dce04759fea68bd8bdedf7b6b6688afe78186bf31c8f6676d5d49a5"
+	[ppc64le]="a8b6cb90e5557091150765aef905a7470daca6825870163df84c432f56d8a7b2"
+	[s390]="08aee4b54683479c85dd12166077692dc14724a6736b06c5e18174c1f7010b4f"
+	[s390x]="c67a94caac51d237a8a045e3528b8dc50e72393aeffe9c146e5e1cf545b1b4db"
+	[x86_64]="34fc944d1973d7bed31ea29371725e7175d927da841951ca27939654f0c6accf"
 )
 
-declare -A sdk_8_sums=(
-	[version]="1.8.0_sr3fp22"
-	[i386]="090efbea7fc8324c434eaecdc680079ffece7cf69d90980708c73368bd6d31f7"
-	[ppc64le]="2eb37f5392f8dd4df4fd5ca874a81ce06cab93c7ff7000b537476accd8e5b727"
-	[s390]="9c3bb9c2d9858b960434784949e1d8190c9ca8d9f9da17a612bc1412de71813c"
-	[s390x]="766a8bbe482861bfdcbeeeb47de84616fba36efa5012fea5130300e00d52f6cd"
-	[x86_64]="7ea96e282eebb31c32b9b42a017a80f49ea2a0eb5f0f40b96ea3c8ee89b2ea60"
+declare -a sdk_8_sums=(
+	[version]="1.8.0_sr3fp21"
+	[i386]="549ec781b0acf7d26a16504cb1f0657e4870f4d61201178e73e5459489abde39"
+	[ppc64le]="0d108498eb147beae848700f678dbaee1dae7c83c4b90a5bbbafdb0a6e7971f0"
+	[s390]="35ed11adf950b4c9512dee9245052368d622ea40f11601de0a9e3d6f2fc7280e"
+	[s390x]="fc338e313a00208c28e1d17d492fda01a87a2367e41a75bbbbab9868028457e1"
+	[x86_64]="2f23f4a6c10fd4e65ad649bc0c11c50fef530502d89405562c6dfa3ad9c1333d"
 )
 
-declare -A sfj_8_sums=(
-	[version]="1.8.0_sr3fp22"
-	[i386]="cafcac4c96ae4e185ea6b94b765ba87a6dfe6284f57bd0df723f449155bb0fc9"
-	[ppc64le]="70691e0c7982fdbbd60fd39d45f48e5839867878bba133c546ffac93773747e4"
-	[s390]="d718b1fb9b17fbc5c817bb287bf190d420fc3ad97238d65ac08703bdb989cf93"
-	[s390x]="c5fa236a11f1a770bd3e6b109b1ac32bdfadb2452d3de68dd88929caacbe1181"
-	[x86_64]="6b63ed16b0f0cdc71da6d478a383e1896c132725a7c5a959310985c3549f6c75"
+declare -a sfj_8_sums=(
+	[version]="1.8.0_sr3fp21"
+	[i386]="49ea72c4d55e0e3838691392353e2bd2c9dca39bc4a81bce40dbb85f389336e2"
+	[ppc64le]="8fe24cb03482ee1046cf040769e09f9b1d38cdf64856d427b7330d5fb7f431d9"
+	[s390]="328ff0affb3da699a3e02c16fc54e3b85aa3fe70264daf337a3fddfc174fa628"
+	[s390x]="4ead7e2ce9e90962bcc9660590817adfbfd6db0f820f54d9534dc6c1f41bd363"
+	[x86_64]="6dbd07c2fd843255591c4684f421c7f6d25f27a174122c08800ff58409619d4f"
 )
 
 # Generate the common license and copyright header
@@ -110,6 +110,31 @@ print_alpine_os() {
 	EOI
 }
 
+# Print the supported Centos OS
+print_centos_os() {
+	case $arch in
+	i386)
+		osrepo="i386/centos"
+		;;
+	x86_64)
+		osrepo="centos"
+		;;
+	s390|s390x)
+		osrepo="s390x/centos"
+		;;
+	ppc64le)
+		osrepo="ppc64le/centos"
+		;;
+	default)
+		osrepo="centos"
+		;;
+	esac
+	cat >> $1 <<-EOI
+	FROM $osrepo:7
+
+	EOI
+}
+
 # Print the maintainer
 print_maint() {
 	cat >> $1 <<-EOI
@@ -156,6 +181,16 @@ RUN apk --update add --no-cache openssl ca-certificates \
     && tar -xvJf /tmp/gcc-libs.tar.xz -C /tmp usr/lib/libgcc_s.so.1 usr/lib/libgcc_s.so \
     && mv /tmp/usr/lib/libgcc* /usr/glibc-compat/lib \
     && rm -rf /tmp/$GLIBC_VER.apk /tmp/usr /tmp/gcc-libs.tar.xz /var/cache/apk/*
+EOI
+}
+
+# Select the EnterpriseLinux OS packages
+print_centos_pkg() {
+	cat >> $1 <<'EOI'
+
+RUN yum -y update \
+    && yum -y install wget ca-certificates \
+		&& yum clean all
 EOI
 }
 
@@ -225,6 +260,32 @@ EOI
 EOI
 }
 
+print_centos_main_run() {
+	shasums="$pack"_"$ver"_sums
+	archsum=${shasums}[$arch]
+	eval ASUM=\${$archsum}
+	cat >> $1 <<-EOI
+RUN ESUM="$ASUM" \\
+    && BASE_URL="https://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/meta/" \\
+    && YML_FILE="$pack/linux/$arch/index.yml" \\
+EOI
+	cat >> $1 <<'EOI'
+    && wget -q -U UA_IBM_JAVA_Docker -O /tmp/index.yml $BASE_URL/$YML_FILE \
+    && JAVA_URL=$(cat /tmp/index.yml | sed -n '/'$JAVA_VERSION'/{n;p}' | sed -n 's/\s*uri:\s//p' | tr -d '\r') \
+    && wget -q -U UA_IBM_JAVA_Docker -O /tmp/ibm-java.bin $JAVA_URL \
+    && echo "$ESUM  /tmp/ibm-java.bin" | sha256sum -c - \
+    && echo "INSTALLER_UI=silent" > /tmp/response.properties \
+    && echo "USER_INSTALL_DIR=/opt/ibm/java" >> /tmp/response.properties \
+    && echo "LICENSE_ACCEPTED=TRUE" >> /tmp/response.properties \
+    && mkdir -p /opt/ibm \
+    && chmod +x /tmp/ibm-java.bin \
+    && /tmp/ibm-java.bin -i silent -f /tmp/response.properties \
+    && rm -f /tmp/response.properties \
+    && rm -f /tmp/index.yml \
+    && rm -f /tmp/ibm-java.bin
+EOI
+}
+
 print_java_env() {
 if [ "$pack" == "sdk" ]; then
 	cat >> $1 <<'EOI'
@@ -253,7 +314,7 @@ do
 			do
 				file=$ver-$pack/$arch/$os/Dockerfile
 				# Ubuntu is supported for everything
-				if [ "$os" == "ubuntu" ]; then 
+				if [ "$os" == "ubuntu" ]; then
 					mkdir -p `dirname $file` 2>/dev/null
 					echo -n "Writing $file..."
 					print_legal $file;
@@ -267,7 +328,7 @@ do
 				fi
 				# Alpine is supported for x86_64 and JRE package only
 				if [ "$os" == "alpine" -a "$arch" == "x86_64" ]; then
-					if [ "$pack" == "jre" -o "$pack" == "sfj" ]; then 
+					if [ "$pack" == "jre" -o "$pack" == "sfj" ]; then
 						mkdir -p `dirname $file` 2>/dev/null
 						echo -n "Writing $file..."
 						print_legal $file;
@@ -279,6 +340,19 @@ do
 						print_java_env $file;
 						echo "done"
 					fi
+				fi
+				# Centos is supported for x86_64
+				if [ "$os" == "centos" -a "$arch" == "x86_64" ]; then
+					mkdir -p `dirname $file` 2>/dev/null
+					echo -n "Writing $file..."
+					print_legal $file;
+					print_centos_os $file;
+					print_maint $file;
+					print_centos_pkg $file;
+					print_env $file;
+					print_centos_main_run $file;
+					print_java_env $file;
+					echo "done"
 				fi
 			done
 		done
