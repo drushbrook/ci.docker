@@ -21,6 +21,7 @@
 
 FROM alpine:3.4
 
+LABEL vendor="IBM" description="IBM Java" version="8"
 LABEL maintainer="Dinakar Guniguntala <dinakar.g@in.ibm.com> (@dinogun)"
 
 RUN apk --update add --no-cache openssl ca-certificates \

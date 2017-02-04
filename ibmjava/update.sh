@@ -110,9 +110,10 @@ print_alpine_os() {
 	EOI
 }
 
-# Print the maintainer
-print_maint() {
+# Print the labels
+print_labels() {
 	cat >> $1 <<-EOI
+	LABEL vendor="IBM" description="IBM Java" version="$ver"
 	LABEL maintainer="Dinakar Guniguntala <dinakar.g@in.ibm.com> (@dinogun)"
 	EOI
 }
@@ -258,7 +259,7 @@ do
 					echo -n "Writing $file..."
 					print_legal $file;
 					print_ubuntu_os $file;
-					print_maint $file;
+					print_labels $file;
 					print_ubuntu_pkg $file;
 					print_env $file;
 					print_ubuntu_main_run $file;
@@ -272,7 +273,7 @@ do
 						echo -n "Writing $file..."
 						print_legal $file;
 						print_alpine_os $file;
-						print_maint $file;
+						print_labels $file;
 						print_alpine_pkg $file;
 						print_env $file;
 						print_alpine_main_run $file;
