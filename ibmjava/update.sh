@@ -113,7 +113,7 @@ print_alpine_os() {
 # Print the maintainer
 print_maint() {
 	cat >> $1 <<-EOI
-	MAINTAINER Dinakar Guniguntala <dinakar.g@in.ibm.com> (@dinogun)
+	LABEL maintainer="Dinakar Guniguntala <dinakar.g@in.ibm.com> (@dinogun)"
 	EOI
 }
 

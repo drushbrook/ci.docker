@@ -21,7 +21,7 @@
 
 FROM ppc64le/ubuntu:16.04
 
-MAINTAINER Dinakar Guniguntala <dinakar.g@in.ibm.com> (@dinogun)
+LABEL maintainer="Dinakar Guniguntala <dinakar.g@in.ibm.com> (@dinogun)"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends wget ca-certificates \

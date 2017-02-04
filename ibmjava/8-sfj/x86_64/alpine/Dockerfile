@@ -21,7 +21,7 @@
 
 FROM alpine:3.4
 
-MAINTAINER Dinakar Guniguntala <dinakar.g@in.ibm.com> (@dinogun)
+LABEL maintainer="Dinakar Guniguntala <dinakar.g@in.ibm.com> (@dinogun)"
 
 RUN apk --update add --no-cache openssl ca-certificates \
     && ln -s /lib /lib64 \
