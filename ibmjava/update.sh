@@ -25,7 +25,7 @@ osver="ubuntu alpine"
 # Ubuntu is supported for everything
 ubuntu_arches="i386 ppc64le s390 s390x x86_64"
 ubuntu_package="jre sdk sfj"
-ubuntu_distvers="16.04"
+ubuntu_distvers="16.04 14.04"
 
 # Alpine is supported for x86_64 and JRE package only
 alpine_arches="x86_64"
