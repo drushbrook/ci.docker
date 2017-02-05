@@ -18,9 +18,19 @@ set -eo pipefail
 
 # Dockerfiles to be generated
 version="8"
-package="jre sdk sfj"
-arches="i386 ppc64le s390 s390x x86_64"
+#package="jre sdk sfj"
+#arches="i386 ppc64le s390 s390x x86_64"
 osver="ubuntu alpine"
+
+# Ubuntu is supported for everything
+ubuntu_arches="i386 ppc64le s390 s390x x86_64"
+ubuntu_package="jre sdk sfj"
+ubuntu_distvers="16.04"
+
+# Alpine is supported for x86_64 and JRE package only
+alpine_arches="x86_64"
+alpine_package="jre sfj"
+alpine_distvers="3.4"
 
 # sha256sum for the various versions, packages and arches
 declare -A jre_8_sums=(
@@ -77,35 +87,27 @@ print_legal() {
 	EOI
 }
 
-# Print the supported Ubuntu OS
-print_ubuntu_os() {
+# Print the supported os
+print_os() {
 	case $arch in
 	i386)
-		osrepo="i386/ubuntu"
+		osrepo="i386/$os"
 		;;
 	x86_64)
-		osrepo="ubuntu"
+		osrepo="$os"
 		;;
 	s390|s390x)
-		osrepo="s390x/ubuntu"
+		osrepo="s390x/$os"
 		;;
 	ppc64le)
-		osrepo="ppc64le/ubuntu"
+		osrepo="ppc64le/$os"
 		;;
 	default)
-		osrepo="ubuntu"
+		osrepo="$os"
 		;;
 	esac
 	cat >> $1 <<-EOI
-	FROM $osrepo:16.04
-
-	EOI
-}
-
-# Print the supported Alpine OS
-print_alpine_os() {
-	cat >> $1 <<-EOI
-	FROM alpine:3.4
+	FROM $osrepo:$dist
 
 	EOI
 }
@@ -246,41 +248,30 @@ fi
 # architectures and supported Operating Systems.
 for ver in $version
 do
-	for pack in $package
+	for os in $osver
 	do
-		for arch in $arches
+		eval "arches=\$${os}_arches"
+		eval "package=\$${os}_package"
+		eval "distvers=\$${os}_distvers"
+		for dist in $distvers
 		do
-			for os in $osver
+			for arch in $arches
 			do
-				file=$ver-$pack/$arch/$os/Dockerfile
-				# Ubuntu is supported for everything
-				if [ "$os" == "ubuntu" ]; then 
+				for pack in $package
+				do
+					file=$ver-$pack/$arch/$os/$dist/Dockerfile
+
 					mkdir -p `dirname $file` 2>/dev/null
 					echo -n "Writing $file..."
 					print_legal $file;
-					print_ubuntu_os $file;
+					print_os $file;
 					print_labels $file;
-					print_ubuntu_pkg $file;
+					print_${os}_pkg $file;
 					print_env $file;
-					print_ubuntu_main_run $file;
+					print_${os}_main_run $file;
 					print_java_env $file;
 					echo "done"
-				fi
-				# Alpine is supported for x86_64 and JRE package only
-				if [ "$os" == "alpine" -a "$arch" == "x86_64" ]; then
-					if [ "$pack" == "jre" -o "$pack" == "sfj" ]; then 
-						mkdir -p `dirname $file` 2>/dev/null
-						echo -n "Writing $file..."
-						print_legal $file;
-						print_alpine_os $file;
-						print_labels $file;
-						print_alpine_pkg $file;
-						print_env $file;
-						print_alpine_main_run $file;
-						print_java_env $file;
-						echo "done"
-					fi
-				fi
+				done
 			done
 		done
 	done
