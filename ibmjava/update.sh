@@ -20,7 +20,7 @@ set -eo pipefail
 version="8"
 #package="jre sdk sfj"
 #arches="i386 ppc64le s390 s390x x86_64"
-osver="ubuntu alpine"
+osver="ubuntu alpine rhel"
 
 # Ubuntu is supported for everything
 ubuntu_arches="i386 ppc64le s390 s390x x86_64"
@@ -31,6 +31,11 @@ ubuntu_distvers="16.04"
 alpine_arches="x86_64"
 alpine_package="jre sfj"
 alpine_distvers="3.4"
+
+# Enterprise Linux is supported for x86_64 only
+rhel_arches="x86_64"
+rhel_package="jre sfj"
+rhel_distvers="7.3"
 
 # sha256sum for the various versions, packages and arches
 declare -A jre_8_sums=(
@@ -162,6 +167,16 @@ RUN apk --update add --no-cache openssl ca-certificates \
 EOI
 }
 
+# Select the RHEL OS packages
+print_rhel_pkg() {
+	cat >> $1 <<'EOI'
+
+RUN yum -y update \
+    && yum -y install wget ca-certificates \
+		&& yum clean all
+EOI
+}
+
 # Print the Java version that is being installed here
 print_env() {
 	shasums="$pack"_"$ver"_sums
@@ -203,6 +218,32 @@ EOI
 }
 
 print_alpine_main_run() {
+	shasums="$pack"_"$ver"_sums
+	archsum=${shasums}[$arch]
+	eval ASUM=\${$archsum}
+	cat >> $1 <<-EOI
+RUN ESUM="$ASUM" \\
+    && BASE_URL="https://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/meta/" \\
+    && YML_FILE="$pack/linux/$arch/index.yml" \\
+EOI
+	cat >> $1 <<'EOI'
+    && wget -q -U UA_IBM_JAVA_Docker -O /tmp/index.yml $BASE_URL/$YML_FILE \
+    && JAVA_URL=$(cat /tmp/index.yml | sed -n '/'$JAVA_VERSION'/{n;p}' | sed -n 's/\s*uri:\s//p' | tr -d '\r') \
+    && wget -q -U UA_IBM_JAVA_Docker -O /tmp/ibm-java.bin $JAVA_URL \
+    && echo "$ESUM  /tmp/ibm-java.bin" | sha256sum -c - \
+    && echo "INSTALLER_UI=silent" > /tmp/response.properties \
+    && echo "USER_INSTALL_DIR=/opt/ibm/java" >> /tmp/response.properties \
+    && echo "LICENSE_ACCEPTED=TRUE" >> /tmp/response.properties \
+    && mkdir -p /opt/ibm \
+    && chmod +x /tmp/ibm-java.bin \
+    && /tmp/ibm-java.bin -i silent -f /tmp/response.properties \
+    && rm -f /tmp/response.properties \
+    && rm -f /tmp/index.yml \
+    && rm -f /tmp/ibm-java.bin
+EOI
+}
+
+print_rhel_main_run() {
 	shasums="$pack"_"$ver"_sums
 	archsum=${shasums}[$arch]
 	eval ASUM=\${$archsum}
