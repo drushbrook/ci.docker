@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-FROM ubuntu:16.04
+FROM s390x/ubuntu:16.04
 
 MAINTAINER Dinakar Guniguntala <dinakar.g@in.ibm.com> (@dinogun)
 
@@ -27,11 +27,11 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends wget ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_VERSION 1.8.0_sr4fp1
+ENV JAVA_VERSION 1.9.0_ea2
 
-RUN ESUM="2b4377c4a8b6934a17ee8e2ec673b4a3d3b97f0b568ef5e20a6ea2e676345bf3" \
+RUN ESUM="6e823afa1df83e364381f827f4244bfe29b0ddd58ef0203eb60df9b8c0d123af" \
     && BASE_URL="https://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/meta/" \
-    && YML_FILE="sdk/linux/x86_64/index.yml" \
+    && YML_FILE="sdk/linux/s390x/index.yml" \
     && wget -q -U UA_IBM_JAVA_Docker -O /tmp/index.yml $BASE_URL/$YML_FILE \
     && JAVA_URL=$(cat /tmp/index.yml | sed -n '/'$JAVA_VERSION'/{n;p}' | sed -n 's/\s*uri:\s//p' | tr -d '\r') \
     && wget -q -U UA_IBM_JAVA_Docker -O /tmp/ibm-java.bin $JAVA_URL \
@@ -46,5 +46,5 @@ RUN ESUM="2b4377c4a8b6934a17ee8e2ec673b4a3d3b97f0b568ef5e20a6ea2e676345bf3" \
     && rm -f /tmp/index.yml \
     && rm -f /tmp/ibm-java.bin
 
-ENV JAVA_HOME=/opt/ibm/java/jre \
+ENV JAVA_HOME=/opt/ibm/java \
     PATH=/opt/ibm/java/bin:$PATH

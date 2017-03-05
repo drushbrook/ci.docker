@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# (C) Copyright IBM Corporation 2016.
+# (C) Copyright IBM Corporation 2016, 2017
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,43 +17,52 @@
 set -eo pipefail
 
 # Dockerfiles to be generated
-version="8"
+version="8 9"
 package="jre sdk sfj"
 arches="i386 ppc64le s390 s390x x86_64"
 osver="ubuntu alpine"
 
 # sha256sum for the various versions, packages and arches
 declare -A jre_8_sums=(
-	[version]="1.8.0_sr3fp22"
-	[i386]="b3e0d6d3e12cd642d791a711fcd6e125127d7bf0733515d4707f03e4033f84de"
-	[ppc64le]="3e975dc5610358f5843b890867a2cd0be6d6f714be19865fb1a701d8739d770b"
-	[s390]="eb075cec66cdd94f5a606ade5eee48396d805ebf9417952eeeb2864c45d81181"
-	[s390x]="aed93cc1776c10f6ca721d93224ce5feb05f9efdf5eec539a5cdde0f858ee379"
-	[x86_64]="ec96d978612fd3981bae382a745669544280cdd7eaaa55fadfbd7a26aa447b25"
+	[version]="1.8.0_sr4fp1"
+	[i386]="759f03c969f0feffdb2b395fa8876ea1b750db90bed0688f8d10ce97e33348df"
+	[ppc64le]="1b0e5f3e0d95367836d7a0bdb30314dd6a820df06ef4eb6d160014cf57ea4b30"
+	[s390]="7ba77b232149ac5188b33f81b365173d0570cf044d41b5a493eddcab92de159b"
+	[s390x]="990e5472d22fff69c2d862b1ee38056cb1dd127043b2173da81a3e93e63959d0"
+	[x86_64]="1f8e4b9c0d03457703c17d54d1ac939696fe8d027da57d47a347833d8cafdc90"
 )
 
 declare -A sdk_8_sums=(
-	[version]="1.8.0_sr3fp22"
-	[i386]="090efbea7fc8324c434eaecdc680079ffece7cf69d90980708c73368bd6d31f7"
-	[ppc64le]="2eb37f5392f8dd4df4fd5ca874a81ce06cab93c7ff7000b537476accd8e5b727"
-	[s390]="9c3bb9c2d9858b960434784949e1d8190c9ca8d9f9da17a612bc1412de71813c"
-	[s390x]="766a8bbe482861bfdcbeeeb47de84616fba36efa5012fea5130300e00d52f6cd"
-	[x86_64]="7ea96e282eebb31c32b9b42a017a80f49ea2a0eb5f0f40b96ea3c8ee89b2ea60"
+	[version]="1.8.0_sr4fp1"
+	[i386]="02588e0494f5d091a9e0602e054af2d733f1fd01432192b5733fb95be4c8e964"
+	[ppc64le]="81ee611d981f0edd60f0ca5543aebcd93a73ef6f40aeda01a48a337661fb85e6"
+	[s390]="610e7a6d5bef62f53fa0057598b441c37d2e8a023fd40d91d5698b73ff9a783b"
+	[s390x]="c09151dc9111636145525267569632287ed5f4788cfda43da3a444d4fafad183"
+	[x86_64]="2b4377c4a8b6934a17ee8e2ec673b4a3d3b97f0b568ef5e20a6ea2e676345bf3"
 )
 
 declare -A sfj_8_sums=(
-	[version]="1.8.0_sr3fp22"
-	[i386]="cafcac4c96ae4e185ea6b94b765ba87a6dfe6284f57bd0df723f449155bb0fc9"
-	[ppc64le]="70691e0c7982fdbbd60fd39d45f48e5839867878bba133c546ffac93773747e4"
-	[s390]="d718b1fb9b17fbc5c817bb287bf190d420fc3ad97238d65ac08703bdb989cf93"
-	[s390x]="c5fa236a11f1a770bd3e6b109b1ac32bdfadb2452d3de68dd88929caacbe1181"
-	[x86_64]="6b63ed16b0f0cdc71da6d478a383e1896c132725a7c5a959310985c3549f6c75"
+	[version]="1.8.0_sr4fp1"
+	[i386]="737b4e3dc317cfe8c45512eddf3a520c9bf30a4aef902c415e89572e74c394e0"
+	[ppc64le]="d99393379775541da45f2d71f97584a146c9a3a15b8646ab03d9bed439aaa4e0"
+	[s390]="b86bc776aee9d83344d6f0ca8d4df053d69383e766651f6351a276ca251f0e13"
+	[s390x]="6d5ef74d4d19120ed0e88df54036d51ec5ee13e3d9fafa9c4bb818706439904e"
+	[x86_64]="e37d585c7e7df77065254ed866bc8db367e74720eea4507774d891b943c6428f"
+)
+
+declare -A sdk_9_sums=(
+	[version]="1.9.0_ea2"
+	[i386]="5add39cc5ca56b97cf8ce71b9e1a15d19d36864aaed1e0296f50355ba3f34bd5"
+	[ppc64le]="3c0dda9f449a667d12fe5f59a1ec059a90a9dc483fd35eef5ff53dd8b096cdf5"
+	[s390]="8d06af57d8236839f5c403c12dcf4c89e22dd91716a4d26b85c8d92f6d1e2e8b"
+	[s390x]="6e823afa1df83e364381f827f4244bfe29b0ddd58ef0203eb60df9b8c0d123af"
+	[x86_64]="0fe3712b54a93695cf4948d9ae171bf5cef038c0e41b364b4e9eb7cb80a60688"
 )
 
 # Generate the common license and copyright header
 print_legal() {
 	cat > $1 <<-EOI
-	# (C) Copyright IBM Corporation 2016.
+	# (C) Copyright IBM Corporation 2016, 2017
 	#
 	# ------------------------------------------------------------------------------
 	#               NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
@@ -227,11 +236,19 @@ EOI
 
 print_java_env() {
 if [ "$pack" == "sdk" ]; then
-	cat >> $1 <<'EOI'
+	if [ "$ver" == "8" ]; then
+		cat >> $1 <<'EOI'
 
 ENV JAVA_HOME=/opt/ibm/java/jre \
     PATH=/opt/ibm/java/bin:$PATH
 EOI
+	elif [ "$ver" == "9" ]; then
+		cat >> $1 <<'EOI'
+
+ENV JAVA_HOME=/opt/ibm/java \
+    PATH=/opt/ibm/java/bin:$PATH
+EOI
+	fi
 else
 	cat >> $1 <<'EOI'
 
@@ -239,6 +256,34 @@ ENV JAVA_HOME=/opt/ibm/java/jre \
     PATH=/opt/ibm/java/jre/bin:$PATH
 EOI
 fi
+}
+
+generate_ubuntu() {
+	file=$1
+	mkdir -p `dirname $file` 2>/dev/null
+	echo -n "Writing $file..."
+	print_legal $file;
+	print_ubuntu_os $file;
+	print_maint $file;
+	print_ubuntu_pkg $file;
+	print_env $file;
+	print_ubuntu_main_run $file;
+	print_java_env $file;
+	echo "done"
+}
+
+generate_alpine() {
+	file=$1
+	mkdir -p `dirname $file` 2>/dev/null
+	echo -n "Writing $file..."
+	print_legal $file;
+	print_alpine_os $file;
+	print_maint $file;
+	print_alpine_pkg $file;
+	print_env $file;
+	print_alpine_main_run $file;
+	print_java_env $file;
+	echo "done"
 }
 
 # Iterate through all the Java versions for each of the supported packages,
@@ -252,32 +297,20 @@ do
 			for os in $osver
 			do
 				file=$ver-$pack/$arch/$os/Dockerfile
-				# Ubuntu is supported for everything
-				if [ "$os" == "ubuntu" ]; then 
-					mkdir -p `dirname $file` 2>/dev/null
-					echo -n "Writing $file..."
-					print_legal $file;
-					print_ubuntu_os $file;
-					print_maint $file;
-					print_ubuntu_pkg $file;
-					print_env $file;
-					print_ubuntu_main_run $file;
-					print_java_env $file;
-					echo "done"
-				fi
-				# Alpine is supported for x86_64 and JRE package only
-				if [ "$os" == "alpine" -a "$arch" == "x86_64" ]; then
-					if [ "$pack" == "jre" -o "$pack" == "sfj" ]; then 
-						mkdir -p `dirname $file` 2>/dev/null
-						echo -n "Writing $file..."
-						print_legal $file;
-						print_alpine_os $file;
-						print_maint $file;
-						print_alpine_pkg $file;
-						print_env $file;
-						print_alpine_main_run $file;
-						print_java_env $file;
-						echo "done"
+				if [ "$ver" == "8" ]; then
+					# Ubuntu is supported for everything
+					if [ "$os" == "ubuntu" ]; then
+						generate_ubuntu $file
+					elif [ "$os" == "alpine" ]; then
+						# Alpine is supported for x86_64 arch and JRE and SFJ packages only
+						if [ "$arch" == "x86_64" ] && [ "$pack" == "jre" -o "$pack" == "sfj" ]; then
+							generate_alpine $file
+						fi
+					fi
+				elif [ "$ver" == "9" ]; then
+					# For now Java 9 betas images are only available for SDK
+					if [ "$os" == "ubuntu" -a "$pack" == "sdk" ]; then
+						generate_ubuntu $file
 					fi
 				fi
 			done
